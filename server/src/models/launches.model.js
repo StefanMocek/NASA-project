@@ -11,13 +11,17 @@ const launch = {
   customer: ['ZTM', 'MASA'],
   upcoming: true,
   success: true
-}
+};
 
 launches.set(launch.flightNumber, launch);
 
+function existsLaunchWithId (launchId) {
+  return launches.has(launchId);
+};
+
 function getAllLaunches () {
   return Array.from(launches.values())
-}
+};
 
 function addNewLaunch (launch) {
   latestFlightNumber++;
@@ -29,9 +33,18 @@ function addNewLaunch (launch) {
       success: true,
       flightNumber: latestFlightNumber
   }))
+};
+
+function abortLaunchById (launchId) {
+  const abortedLaunch = launches.get(launchId);
+  abortedLaunch.upcoming = false;
+  abortedLaunch.success = false;
+  return abortedLaunch;
 }
 
 module.exports = {
+  existsLaunchWithId,
   getAllLaunches,
-  addNewLaunch
-}
+  addNewLaunch,
+  abortLaunchById
+};
