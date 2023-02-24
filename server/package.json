@@ -5,7 +5,9 @@
   "main": "src/server.js",
   "scripts": {
     "watch": "npx nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node src/server.js",
+    "test": "jest",
+    "test-watch": "jest --watch"
   },
   "keywords": [],
   "author": "",
@@ -17,6 +19,8 @@
     "nasa-project": "file:.."
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "jest": "^29.4.3",
+    "nodemon": "^2.0.20",
+    "supertest": "^6.3.3"
   }
 }
