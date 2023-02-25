@@ -51,7 +51,7 @@ async function populeteLaunches () {
       customers
     };
 
-    console.log(`${launch.flightNumber} ${launch.mission}`);
+    // console.log(`${launch.flightNumber} ${launch.mission}`);
 
     await saveLaunch(launch);
   };
