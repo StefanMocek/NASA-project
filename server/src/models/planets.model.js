@@ -28,14 +28,14 @@ function loadPlanetsData () {
       })
       .on('end', async () => {
         const countPlanetsFound = (await getAllPlanets()).length
-        console.log(`${habitablePlanets.length} habitable planets found!`);
+        console.log(`${countPlanetsFound} habitable planets found!`);
         resolve();
       });
   })
 }
 
 async function getAllPlanets () {
-  return await planets({}, {
+  return await planets.find({}, {
     '_id': 0,
     '__v': 0
   })
