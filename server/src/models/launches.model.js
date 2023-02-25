@@ -1,6 +1,7 @@
-const launches = new Map();
+const launches = require('./launches.mongo');
+const planets = require('./planets.mongo');
 
-let latestFlightNumber = 100;
+const DEFAULT_FLIGHT_NUMBER = 100;
 
 const launch = {
   flightNumber:100,
@@ -13,26 +14,56 @@ const launch = {
   success: true
 };
 
-launches.set(launch.flightNumber, launch);
+saveLaunch(launch);
 
 function existsLaunchWithId (launchId) {
   return launches.has(launchId);
 };
 
-function getAllLaunches () {
-  return Array.from(launches.values())
+async function getLatestFlightNumber () {
+  const latestLaunch = await launches
+    .findOne()
+    .sort('-flightNumber');
+
+  if (!latestLaunch){
+    return DEFAULT_FLIGHT_NUMBER;
+  };
+    
+  return latestLaunch.flightNumber;
 };
 
-function addNewLaunch (launch) {
-  latestFlightNumber++;
-  launches.set(
-    launch.flightNumber, 
-    Object.assign(launch, {
-      customer: ['ZTM', 'MASA'],
-      upcoming: true,
-      success: true,
-      flightNumber: latestFlightNumber
-  }))
+async function getAllLaunches () {
+  return await launches
+    .find({}, {'_id': 0,'__v': 0});
+};
+
+async function saveLaunch (launch) {
+  const planet = await planets.findOne({
+    keplerName: launch.target,
+  });
+
+  if (!planet) {
+    throw new Error('No matching planet found');
+  }
+
+  await launches.findOneAndUpdate({
+    flightNumber: launch.flightNumber,
+  }, launch, {
+    upsert:true
+  })
+};
+
+async function scheduleNewLaunch (launch) {
+  const newFlightNumber = await getLatestFlightNumber() + 1;
+
+  const newLaunch = Object.assign(launch, {
+    upcoming: true,
+    success: true,
+    customer: ['ZTM', 'MASA'],
+    flightNumber: newFlightNumber
+  });
+
+  await saveLaunch(newLaunch);
 };
 
 function abortLaunchById (launchId) {
@@ -40,11 +71,11 @@ function abortLaunchById (launchId) {
   abortedLaunch.upcoming = false;
   abortedLaunch.success = false;
   return abortedLaunch;
-}
+};
 
 module.exports = {
   existsLaunchWithId,
   getAllLaunches,
-  addNewLaunch,
-  abortLaunchById
+  abortLaunchById,
+  scheduleNewLaunch
 };
