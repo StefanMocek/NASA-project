@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
-require('dotenv').config();
+const path = require('path')
+require('dotenv').config({ path: path.resolve(__dirname, '../../.env') })
 
 const url = process.env.MONGO_URL;
 
@@ -15,6 +16,11 @@ async function mongoConnect () {
   await mongoose.connect(url);
 };
 
+async function mongoDisconnect () {
+  await mongoose.disconnect();
+};
+
 module.exports = {
-  mongoConnect
+  mongoConnect,
+  mongoDisconnect
 };
